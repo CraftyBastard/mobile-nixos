@@ -32,10 +32,12 @@
   ./initrd-vendor.nix
   ./initrd.nix
   ./internal.nix
+  ./kernel-config.nix
   ./lib.nix
   ./luks.nix
   ./mobile-device.nix
   ./nixpkgs.nix
+  ./outputs.nix
   ./quirks
   ./recovery.nix
   ./rootfs.nix

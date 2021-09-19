@@ -4,7 +4,7 @@
 # This is meant for use internally by Mobile NixOS, the interface here
 # should not be assumed to be *stable*.
 {
-  pkgs ? import <nixpkgs> {}
+  pkgs ? null
   # The identifier of the device this should be built for.
   # (This gets massaged later on)
 , device ? null
@@ -13,6 +13,7 @@
 , additionalConfiguration ? {}
 , additionalHelpInstructions ? ""
 }:
+if pkgs == null then (builtins.throw "The `pkgs` argument needs to be provided to eval-with-configuration.nix") else
 let
   inherit (pkgs.lib) optionalString strings;
   inherit (strings) concatStringsSep stringAsChars;
@@ -43,6 +44,9 @@ let
     in
     builtins.trace (concatStringsSep "\ntrace: " [line str' line])
   ;
+
+  # Merge the system-type outputs at the root of the outputs.
+  outputs = eval.config.mobile.outputs // eval.config.mobile.outputs.${eval.config.mobile.system.type};
 in
   (
     # Don't break if `device` is not set.
@@ -55,7 +59,8 @@ in
   )
 {
   # The build artifacts from the modules system.
-  inherit (eval.config.system) build;
+  inherit outputs;
+  build = builtins.trace "The `build` argument has been renamed `outputs`. This alias will be removed after 2022-05." outputs;
 
   # The evaluated config
   inherit (eval) config;
